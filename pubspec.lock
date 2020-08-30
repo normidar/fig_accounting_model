@@ -77,7 +77,7 @@ packages:
       name: fig_database_linker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.25"
+    version: "0.2.27"
   flutter:
     dependency: "direct main"
     description: flutter
