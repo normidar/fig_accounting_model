@@ -56,8 +56,20 @@ class AccountSystem {
   Future _updateTotals(String _form, String _to, double count) {}
 
   ///增减会计元素,内附检测,若没有则创建
-  Future _addTatals(String where, double count) {}
-
+  Future _addTatals(String where, double count)async {
+    bool hasTable = await _checkTotal(where);
+    if(!hasTable){
+      await _createColumn(where);
+    }
+    linker.getRows()
+  }
+  ///创建一行
+  Future _createColumn(String name)async{
+    await linker.addDataToTable(totalTableName, [{
+      'account_name':name,
+      'count':'0',
+    }]);
+  }
   ///检测是否有该会计元素
   Future<bool> _checkTotal(String where) async {
     var result = await linker.getRows("SELECT * FROM " +
