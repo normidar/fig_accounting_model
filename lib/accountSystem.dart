@@ -45,38 +45,47 @@ class AccountSystem {
   }
 
   ///
-  Future insertStream(String _form, String _to, double count, {DateTime date}) {
+  Future insertStream(String _form, String _to, double count,
+      {DateTime date}) async {
     if (date == null) date = DateTime.now();
-    linker.addDataToTable('accounting_steams', [
+    //更新流表
+    await linker.addDataToTable('accounting_steams', [
       {'form': _form, 'to': _to, 'count': count, 'date': date.toString()}
     ]);
+    //更新汇总表
+    await _updateTotals(_form, _to, count);
   }
 
   ///更新会计汇总
-  Future _updateTotals(String _form, String _to, double count) {}
+  Future _updateTotals(String _form, String _to, double count) async {
+    //对汇总表进行更改
+    await _addTatals(_form, -count);
+    await _addTatals(_to, count);
+  }
 
   ///增减会计元素,内附检测,若没有则创建
-  Future _addTatals(String where, double count)async {
+  Future _addTatals(String where, double count) async {
     bool hasTable = await _checkTotal(where);
-    if(!hasTable){
+    if (!hasTable) {
       await _createColumn(where);
     }
-    linker.getRows()
+    await linker.where(totalTableName, 'account_name', where,
+        addField: 'count', addValue: count);
   }
+
   ///创建一行
-  Future _createColumn(String name)async{
-    await linker.addDataToTable(totalTableName, [{
-      'account_name':name,
-      'count':'0',
-    }]);
+  Future _createColumn(String name) async {
+    await linker.addDataToTable(totalTableName, [
+      {
+        'account_name': name,
+        'count': '0',
+      }
+    ]);
   }
+
   ///检测是否有该会计元素
   Future<bool> _checkTotal(String where) async {
-    var result = await linker.getRows("SELECT * FROM " +
-        totalTableName +
-        " WHERE account_name = '" +
-        where +
-        "'");
+    var result = await linker.where(totalTableName, 'account_name', where);
     if (result.length > 0)
       return true;
     else

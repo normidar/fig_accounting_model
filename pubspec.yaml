@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  fig_database_linker: ^0.2.27
+  fig_database_linker: ^0.2.30
 
 dev_dependencies:
   flutter_test:
