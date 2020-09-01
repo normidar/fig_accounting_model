@@ -44,7 +44,7 @@ class AccountSystem {
     await _createInitTables();
   }
 
-  ///
+  ///插入一条会计行
   Future insertStream(String _form, String _to, double count,
       {DateTime date}) async {
     if (date == null) date = DateTime.now();
@@ -54,6 +54,19 @@ class AccountSystem {
     ]);
     //更新汇总表
     await _updateTotals(_form, _to, count);
+  }
+
+  ///返回现在的金额总数
+  Future<Map<String,double>> getTotalView()async{
+    var result = await linker.getTableView(totalTableName);
+    Map<String,double> rt = {};
+    for(var i in result){
+      rt[i[1]] = double.parse(i[2]);
+    }
+    return rt;
+  }
+  Future<List<List<String>>> getStreamView(int count)async{
+    return await linker.getTableView(totalTableName,count:count);
   }
 
   ///更新会计汇总
